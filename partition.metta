@@ -1,5 +1,4 @@
 ! (import! &self  partition)
-! (register-module! ./)
 
 (= (add-to-subsets $element $subsets)
     (if (== $subsets ())
@@ -34,6 +33,8 @@
  ;;  for example
  ;;;;;;  input: ('A' 'B' 'C')
  ;;;;;;  output: (('A') ('B') ('C') ('A' 'B') ('A' 'C')  ('B' 'C') ('A' 'B' 'C'))
+(: powerset (-> Expression Expression))
+(: gen-subsets (-> Expression Expression))
 
 (= (powerset $lst)
     (if (== $lst ())
@@ -55,11 +56,11 @@
  ;; ((('A') ('B') ('C'))   ('A' 'B') ('C'))     (('A' 'C')  ('B'))    the partition
 
 (= (generet-partition-without-pattern $pattern)
-    (let $subsets (powerset $pattern)
+    (let $subsets (gen-subsets $pattern)
         (gen-partition $subset $pattern)) ; gen-partition is registered
 )
 
  ;;;;;  this is checker function which help wether it check the python function is registered or not
 
-! (get-type gen-partion)
-! ( gen-partition ( () ('C') ('B') ('B' 'C') ('A') ('A' 'C') ('A' 'B') ('A' 'B' 'C'))  ('A' 'B' 'C') )
+! (generet-partition-without-pattern ('A' 'B' 'C'))
+! (gen-subsets ('A' 'B' 'C'))
