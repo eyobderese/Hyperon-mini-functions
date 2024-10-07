@@ -1,5 +1,15 @@
 ! (import! &self  partition)
 
+ ; Function: add-to-subsets
+ ; Description: Adds an element to each subset in a list of subsets.
+ ; Parameters:
+ ;   $element - The element to be added to each subset.
+ ;   $subsets - The list of subsets to which the element will be added.
+ ; Returns: A new list of subsets with the element added to each subset.
+ ; Notes:
+ ;   - If the list of subsets is empty, it returns an empty list.
+ ;   - Uses recursion to process each subset in the list.
+
 (= (add-to-subsets $element $subsets)
     (if (== $subsets ())
         () ; If the subsets list is empty, return an empty list
@@ -17,6 +27,19 @@
 )
 )
 
+ ; Function: concat-atom
+ ; Concatenates two lists, $list1 and $list2, into a single list.
+ ;
+ ; Parameters:
+ ; - $list1: The first list to concatenate. If this list is empty, the function returns $list2.
+ ; - $list2: The second list to concatenate.
+ ;
+ ; Returns:
+ ; - A new list that is the result of appending all elements of $list1 to the front of $list2.
+ ;
+ ; The function works recursively by taking the head of $list1 and attaching it to the result of
+ ; concatenating the tail of $list1 with $list2. If $list1 is empty, it simply returns $list2.
+
 (= (concat-atom $list1 $list2)
     (if (== $list1 ())
         $list2 ; If the first list is empty, return the second list
@@ -29,13 +52,23 @@
 )
 )
 
- ; powerset is generet a subset of the orginal pattern
+ ;Function: powerset
+ ;Description: Computes the powerset of a given list. The powerset is the set of all subsets of the list.
+ ;Signature: (-> Expression Expression)
+ ;Parameters:
+ ;  - $lst: The input list for which the powerset is to be computed.
+ ;Returns: The powerset of the input list, which is a list of all subsets of the input list.
+ ;Base Case: If the input list is empty, the powerset is a list containing one empty set.
+ ;Recursive Case:
+ ;  1. Recursively compute the powerset of the rest of the list (excluding the first element).
+ ;  2. Add the first element to each subset in the powerset of the rest of the list.
+ ;  3. Combine the subsets with and without the first element to form the final powerset.
+
  ;;  for example
  ;;;;;;  input: ('A' 'B' 'C')
  ;;;;;;  output: (('A') ('B') ('C') ('A' 'B') ('A' 'C')  ('B' 'C') ('A' 'B' 'C'))
-(: powerset (-> Expression Expression))
-(: gen-subsets (-> Expression Expression))
 
+(: powerset (-> Expression Expression))
 (= (powerset $lst)
     (if (== $lst ())
         (cons-atom () ()) ; Base case: the powerset of an empty list is a list with one empty set
@@ -47,20 +80,23 @@
 )
 )
 
+ ;;; generet-partition-without-pattern generates a partition using a Python implementation of gen-partition.
+ ;;;
+ ;;; Input:
+ ;;; - $pattern: The original pattern to partition.
+ ;;; - $subsets: A list of subsets derived from the original pattern.
+ ;;;   Example: (('A') ('B') ('C') ('A' 'B') ('A' 'C') ('B' 'C') ('A' 'B' 'C'))
+ ;;;
+ ;;; Output:
+ ;;; - A list of partitions generated from the subsets and the original pattern.
+ ;;;   Example: ((('A') ('B') ('C')) ('A' 'B') ('C')) (('A' 'C') ('B'))
+ ;;;
+ ;;; Usage:
+ ;;; (generet-partition-without-pattern $pattern)
+ ;;; - This function calls gen-partition with the subsets and the original pattern.
  ;;; generet-partition-without-pattern is genrete aa partition using python implmentation of gen-partion
 
- ;;  input
- ;; (('A') ('B') ('C') ('A' 'B') ('A' 'C')  ('B' 'C') ('A' 'B' 'C'))  subset
- ;; ('A' 'B' 'C')  the orginal pattern
- ;; output
- ;; ((('A') ('B') ('C'))   ('A' 'B') ('C'))     (('A' 'C')  ('B'))    the partition
-
 (= (generet-partition-without-pattern $pattern)
-    (let $subsets (gen-subsets $pattern)
-        (gen-partition $subset $pattern)) ; gen-partition is registered
+    (let $subsets (powerset $pattern)
+        (gen-partition $subsets $pattern)) ; gen-partition is registered
 )
-
- ;;;;;  this is checker function which help wether it check the python function is registered or not
-
-! (generet-partition-without-pattern ('A' 'B' 'C'))
-! (gen-subsets ('A' 'B' 'C'))

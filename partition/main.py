@@ -1,3 +1,4 @@
+import itertools
 from hyperon import *
 from hyperon.ext import register_atoms
 import re
@@ -12,7 +13,6 @@ from hyperon.atoms import ExpressionAtom, E, GroundedAtom, OperationAtom, ValueA
 from hyperon.base import Tokenizer, SExprParser
 from hyperon.ext import register_atoms, register_tokens
 import hyperonpy as hp
-
 
 
 def parseFromExpresstion(metta, expresion, dimention):
@@ -33,31 +33,24 @@ def parseToExpression(metta, strings):
     return atom
 
 
+def generate_subsets(metta, original_pattern):
+    elements = original = parseFromExpresstion(metta, original_pattern, 1)
 
-import itertools
-
-def generate_subsets(metta,original_pattern):
-    # Step 1: Parse the original pattern into individual elements.
-    # Assuming elements are separated by spaces, and quotes are part of the element.
-    elements = original= parseFromExpresstion(metta,original_pattern,1)
-    
-    # Step 2: Generate all subsets (powerset) of the elements.
-    # itertools.chain.from_iterable() flattens the list of subsets.
     subsets = list(itertools.chain.from_iterable(
         itertools.combinations(elements, r) for r in range(len(elements) + 1)
     ))
-    
-    # Step 3: Format the subsets in the required pattern format.
+
     formatted_subsets = str(subsets)
-    formatted_subsets = parseToExpression(metta,formatted_subsets)
+    formatted_subsets = parseToExpression(metta, formatted_subsets)
     return formatted_subsets
+
 
 @register_atoms(pass_metta=True)
 def generete_subsetReg(metta: MeTTa):
 
     # Define the operation atom with its parameters and function
     generateSubset = OperationAtom('generate-subsets', lambda a: generate_subsets(metta, a),
-                                     ['Expression', 'Expression'], unwrap=False)
+                                   ['Expression', 'Expression'], unwrap=False)
     return {
         r"gen-subsets": generateSubset
     }
